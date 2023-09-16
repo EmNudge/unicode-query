@@ -1,6 +1,6 @@
 export const time = async <T>(
   title: string,
-  func: () => T,
+  func: () => T | Promise<T>,
   onFinish?: (val: T) => void,
 ) => {
   console.time(title);

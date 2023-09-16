@@ -2,33 +2,30 @@ export type BidiClass =
   | "L" | "R" | "AL" | "EN" | "ES" | "ET" | "AN" | "CS" | "NSM" | "BN" | "B" | "S" | "WS" | "ON"
   | "LRE" | "LRO" | "RLE" | "RLO" | "PDF" | "LRI" | "RLI" | "FSI" | "PDI"
 
-export interface UnicodeCharInfo {
+export interface UnicodeMapData {
   codepoint: number;
-  name: string;
+  label: string;
   category: string;
-  combiningClass: number;
+  combiningClass: string;
   bidiClass: BidiClass;
-  decomposition: {
-    type: string;
-    codepoints: number[];
-  } | null;
-  numberEquivalent: {
-    decimal: number | null;
-    digit: number | null;
-    numeric: string | null;
-  };
+  decompositionStr: string;
+  decimalEquiv: string;
+  digitEquiv: string;
+  numericEquiv: string;
   isBidiMirrored: boolean;
-  caseMapping: {
-    uppercase: number | null,
-    lowercase: number | null,
-    titlecase: number | null,
-  };
-  oldName: string | null;
-}
+  oldName: string;
+  uppercaseMapping: string;
+  lowercaseMapping: string;
+  titlecaseMapping: string;
+};
+
+interface UnicodeBlockData {
+  name: string;
+  range: [number, number];
+};
 
 export interface UnicodeMappings {
   unicodeBlocks: Map<string, UnicodeBlockData>;
   unicodeData: Map<number, UnicodeMapData>;
   symbolHtmlNames: Map<number, string[]>;
-  nameIndex: Map<number, string[]>;
 }

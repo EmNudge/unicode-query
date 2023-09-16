@@ -1,21 +1,4 @@
-import type { UnicodeMappings, BidiClass } from "./index.d";
-
-interface UnicodeMapData {
-  codepoint: number;
-  label: string;
-  category: string;
-  combiningClass: string;
-  bidiClass: BidiClass;
-  decompositionStr: string;
-  decimalEquiv: string;
-  digitEquiv: string;
-  numericEquiv: string;
-  isBidiMirrored: boolean;
-  oldName: string;
-  uppercaseMapping: string;
-  lowercaseMapping: string;
-  titlecaseMapping: string;
-};
+import type { UnicodeMappings, BidiClass, UnicodeMapData, UnicodeBlockData } from "./index.d";
 
 function getUnicodeMap(text: string): Map<number, UnicodeMapData> {
   const arr = text.split('\n').map(line => {
@@ -41,11 +24,6 @@ function getUnicodeMap(text: string): Map<number, UnicodeMapData> {
   return new Map(arr);
 }
 
-type UnicodeBlockData = {
-  name: string;
-  range: [number, number];
-};
-
 function getUnicodeBlockMap(text: string): Map<string, UnicodeBlockData> {
   const arr = text.split('\n').map(row => {
     const [rangeStr, name] = row.split('; ');
@@ -70,22 +48,6 @@ function getSymbolHtmlNamesMap(text: string): Map<number, string[]> {
   return new Map(symbolNamesMap);
 }
 
-function getNameIndexMap(text: string): Map<number, string[]> {
-  const map = new Map<number, string[]>();
-
-  // multiple lines can refer to the same codepoint
-  // we must iterate manually
-  for (const line of text.split('\n')) {
-    const [namesStr, codepointStr] = line.split('\t');
-    const names = namesStr.split(', ');
-    const codepoint = parseInt(codepointStr, 16);
-    
-    const fullNamesArr =[...(map.get(codepoint) ?? []), ...names];
-    map.set(codepoint, fullNamesArr);
-  }
-  return map;
-}
-
 let initState: Promise<UnicodeMappings> | null = null;
 
 export async function init(): Promise<UnicodeMappings> {
@@ -95,52 +57,19 @@ export async function init(): Promise<UnicodeMappings> {
     fetch("/Blocks.txt").then((res) => res.text()).then(getUnicodeBlockMap),
     fetch("/UnicodeData.txt").then((res) => res.text()).then(getUnicodeMap),
     fetch("/SymbolHtmlNames.txt").then((res) => res.text()).then(getSymbolHtmlNamesMap),
-    fetch("/Index.txt").then((res) => res.text()).then(getNameIndexMap),
   ] as const;
 
   initState = Promise.all(promises).then(values => {
-    const [unicodeBlocks, unicodeData, symbolHtmlNames, nameIndex] = values;
+    const [unicodeBlocks, unicodeData, symbolHtmlNames] = values;
     return {
       unicodeBlocks,
       unicodeData,
       symbolHtmlNames,
-      nameIndex,
     } as UnicodeMappings;
   });
 
   return initState;
 }
 
-export function query(unicodeMappings: UnicodeMappings, name: string) {
-  const results: UnicodeMapData[] = [];
-
-  const normalizedName = name.toLowerCase();
-  for (const [codepoint, data] of unicodeMappings.unicodeData) {
-    const match = 
-      data.label.includes(normalizedName)
-      || data.oldName?.includes(normalizedName)
-      || unicodeMappings.nameIndex.get(codepoint)?.some(n => n.includes(normalizedName));
-
-    if (!match) continue;
-
-    results.push(data);
-  }
-  
-  return results;
-}
-
-export function query2(unicodeMappings: UnicodeMappings, name: string) {
-  const normalizedName = name.toLowerCase();
-
-  return [...unicodeMappings.unicodeData.values()]
-    .filter(data => {
-      const match = 
-        data.label.includes(normalizedName)
-        || data.oldName?.includes(normalizedName)
-        || unicodeMappings.nameIndex.get(data.codepoint)?.some(n => n.includes(normalizedName));
-      return match;
-    })
-    .map(data => {
-      return { ...data, altNames: unicodeMappings.nameIndex.get(data.codepoint) }
-    })
-}
+export * from './simpleQuery';
+export * from './advancedQuery';

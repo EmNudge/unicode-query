@@ -29,11 +29,8 @@ function getRegexFromGlob(text: string): RegExp | null {
 }
 
 const charQuery = (unicodeMappings: UnicodeMappings, codepoint: number) => {
-  const match = [...unicodeMappings.unicodeData.values()]
+  return [...unicodeMappings.unicodeData.values()]
     .find(char => char.codepoint === codepoint);
-
-  if (!match) return null;
-  return { ...match, altNames: unicodeMappings.nameIndex.get(match.codepoint) }
 }
 
 export function simpleQuery(unicodeMappings: UnicodeMappings, text: string) {
@@ -50,18 +47,12 @@ export function simpleQuery(unicodeMappings: UnicodeMappings, text: string) {
   if (range) {
     return [...unicodeMappings.unicodeData.values()]
       .filter(({ codepoint }) => codepoint > range[0] && codepoint < range[1])
-      .map(data => {
-        return { ...data, altNames: unicodeMappings.nameIndex.get(data.codepoint) }
-      });
   }
 
   const globRegex = getRegexFromGlob(text.trim());
   if (globRegex) {
     return [...unicodeMappings.unicodeData.values()]
       .filter(({ label }) => globRegex.test(label))
-      .map(data => {
-        return { ...data, altNames: unicodeMappings.nameIndex.get(data.codepoint) }
-      });
   }
 
   const regexRes = text.match(/\/(.+?)\/([a-z]+)?/);
@@ -70,15 +61,9 @@ export function simpleQuery(unicodeMappings: UnicodeMappings, text: string) {
     const regex = new RegExp(regexStr, /i/i.test(flagsStr) ? 'ui' : 'u');
     return [...unicodeMappings.unicodeData.values()]
       .filter(({ label }) => regex.test(label))
-      .map(data => {
-        return { ...data, altNames: unicodeMappings.nameIndex.get(data.codepoint) }
-      });
   }
 
   // name includes match
   return [...unicodeMappings.unicodeData.values()]
     .filter(({ label }) => label.includes(text))
-    .map(data => {
-      return { ...data, altNames: unicodeMappings.nameIndex.get(data.codepoint) }
-    });
 }
