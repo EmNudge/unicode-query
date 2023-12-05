@@ -29,3 +29,11 @@ export interface UnicodeMappings {
   unicodeData: Map<number, UnicodeMapData>;
   symbolHtmlNames: Map<number, string[]>;
 }
+
+type FilterData =
+  | { type: "character"; value: RegExp }
+  | { type: "name"; value: RegExp | string }
+  | { type: "range"; value: [number, number] }
+  | { type: "bidi"; value: BidiClass };
+
+export type Filter = FilterData & { negated?: boolean };

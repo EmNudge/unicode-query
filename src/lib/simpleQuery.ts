@@ -36,10 +36,12 @@ const charQuery = (unicodeMappings: UnicodeMappings, codepoint: number) => {
 export function simpleQuery(unicodeMappings: UnicodeMappings, text: string) {
   const num = getNumFromText(text);
   if (num !== null) {
-    return charQuery(unicodeMappings, num);
+    const result = charQuery(unicodeMappings, num);
+    return result ? [result] : [];
   }
   if ([...text].length === 1) {
-    return charQuery(unicodeMappings, text.codePointAt(0)!);
+    const result = charQuery(unicodeMappings, text.codePointAt(0)!);
+    return result ? [result] : [];
   }
 
   // allow ranges of codepoints using '-' as a separator
