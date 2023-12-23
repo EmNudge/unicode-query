@@ -3,6 +3,7 @@ import type {
   BidiClass,
   UnicodeMapData,
   UnicodeBlockData,
+  InitOptions,
 } from "./index.d";
 
 function getUnicodeMap(text: string): Map<number, UnicodeMapData> {
@@ -75,14 +76,6 @@ function getSymbolHtmlNamesMap(text: string): Map<number, string[]> {
 }
 
 let initState: Promise<UnicodeMappings> | null = null;
-
-interface InitOptions {
-  data?: {
-    blocks?: string;
-    unicodeData?: string;
-    symbolHtmlNames?: string;
-  };
-}
 
 export async function init({
   data,

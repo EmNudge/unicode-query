@@ -1,6 +1,27 @@
 export type BidiClass =
-  | "L" | "R" | "AL" | "EN" | "ES" | "ET" | "AN" | "CS" | "NSM" | "BN" | "B" | "S" | "WS" | "ON"
-  | "LRE" | "LRO" | "RLE" | "RLO" | "PDF" | "LRI" | "RLI" | "FSI" | "PDI"
+  | "L"
+  | "R"
+  | "AL"
+  | "EN"
+  | "ES"
+  | "ET"
+  | "AN"
+  | "CS"
+  | "NSM"
+  | "BN"
+  | "B"
+  | "S"
+  | "WS"
+  | "ON"
+  | "LRE"
+  | "LRO"
+  | "RLE"
+  | "RLO"
+  | "PDF"
+  | "LRI"
+  | "RLI"
+  | "FSI"
+  | "PDI";
 
 export interface UnicodeMapData {
   codepoint: number;
@@ -17,12 +38,12 @@ export interface UnicodeMapData {
   uppercaseMapping: string;
   lowercaseMapping: string;
   titlecaseMapping: string;
-};
+}
 
 interface UnicodeBlockData {
   name: string;
   range: [number, number];
-};
+}
 
 export interface UnicodeMappings {
   unicodeBlocks: Map<string, UnicodeBlockData>;
@@ -37,3 +58,23 @@ type FilterData =
   | { type: "bidi"; value: BidiClass };
 
 export type Filter = FilterData & { negated?: boolean };
+
+interface InitOptions {
+  data?: {
+    blocks?: string;
+    unicodeData?: string;
+    symbolHtmlNames?: string;
+  };
+}
+
+export function init({ data }?: InitOptions): Promise<UnicodeMappings>;
+
+export function simpleQuery(
+  unicodeMappings: UnicodeMappings,
+  text: string
+): UnicodeMapData[];
+
+export function advancedQuery(
+  unicodeMappings: UnicodeMappings,
+  filters: Filter[]
+): UnicodeMapData[];
