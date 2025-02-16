@@ -4,11 +4,33 @@
 
 A Unicode querying engine. Built for [Unicode Lookup](https://github.com/EmNudge/unicode-lookup).
 
-> [!WARNING]
-> This project is still in active development. 
-> It is currently in testing stages and not ready for publishing.
-
 </div>
+
+```js
+const result = simpleQuery(unicodeMappings, "pile");
+
+console.log(result); 
+/* output:
+[
+  {
+    "codepoint": 128169,
+    "label": "pile of poo",
+    "category": "So",
+    "combiningClass": 0,
+    "bidiClass": "ON",
+    "decompositionStr": null,
+    "decimalEquiv": null,
+    "digitEquiv": null,
+    "numericEquiv": null,
+    "isBidiMirrored": false,
+    "oldName": null,
+    "uppercaseMapping": null,
+    "lowercaseMapping": null,
+    "titlecaseMapping": null
+  }
+]
+*/
+```
 
 ## Goals
 

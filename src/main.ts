@@ -1,8 +1,10 @@
 import { deserialize, simpleQuery } from "../lib";
 
-const unicodeMappings = await init();
+let unicodeMappingsCache: Awaited<ReturnType<typeof deserialize>> | undefined;
 
 export async function init() {
+  if (unicodeMappingsCache) return unicodeMappingsCache;
+
   const getFile = (path: string) =>
     fetch(path).then((res) => res.text());
 
@@ -14,11 +16,13 @@ export async function init() {
 
   const [unicodeBlocks, unicodeData, symbolHtmlNames] = await Promise.all(promises);
 
-  return deserialize({
+  unicodeMappingsCache = deserialize({
     blocks: unicodeBlocks,
     unicodeData,
     symbolHtmlNames,
   });
+
+  return unicodeMappingsCache;
 }
 
 
@@ -30,8 +34,12 @@ document.body.innerHTML = `
 const inputEl = document.querySelector("input")!;
 const outputEl = document.querySelector("output")!;
 
-inputEl.addEventListener("input", () => {
+
+
+inputEl.addEventListener("input", async () => {
   if (!inputEl.value) return;
+
+  const unicodeMappings = await init();
 
   const results = simpleQuery(unicodeMappings, inputEl.value);
   outputEl.innerHTML = results
