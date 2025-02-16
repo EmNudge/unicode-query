@@ -1,4 +1,4 @@
-import type { UnicodeMappings } from "./index.d";
+import { UnicodeMappings } from "./deserialize";
 
 function getNumFromText(text: string): number | null {
   if (/^[0-9]+$/.test(text)) return Number(text);
@@ -48,7 +48,7 @@ export function simpleQuery(unicodeMappings: UnicodeMappings, text: string) {
   const range = getNumRangeFromText(text);
   if (range) {
     return [...unicodeMappings.unicodeData.values()]
-      .filter(({ codepoint }) => codepoint > range[0] && codepoint < range[1])
+      .filter(({ codepoint }) => codepoint >= range[0] && codepoint <= range[1])
   }
 
   const globRegex = getRegexFromGlob(text.trim());
@@ -62,7 +62,7 @@ export function simpleQuery(unicodeMappings: UnicodeMappings, text: string) {
     const { 1: regexStr, 2: flagsStr } = regexRes;
     const regex = new RegExp(regexStr, /i/i.test(flagsStr) ? 'ui' : 'u');
     return [...unicodeMappings.unicodeData.values()]
-      .filter(({ label }) => regex.test(label))
+      .filter(({ codepoint }) => regex.test(String.fromCodePoint(codepoint)))
   }
 
   // name includes match

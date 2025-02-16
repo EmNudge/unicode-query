@@ -1,4 +1,12 @@
-import { Filter, UnicodeMappings } from "./index.d";
+import type { UnicodeMappings, BidiClass } from "./deserialize";
+
+type FilterData =
+  | { type: "character"; value: RegExp }
+  | { type: "name"; value: RegExp | string }
+  | { type: "range"; value: [number, number] }
+  | { type: "bidi"; value: BidiClass };
+  
+export type Filter = FilterData & { negated?: boolean };
 
 export const PLANE_LENGTH = 2 << 15;
 
@@ -42,7 +50,7 @@ export function advancedQuery(
           : val.bidiClass === filter.value;
       }
 
-      // @ts-ignore
+      // @ts-expect-error
       throw new Error(`Unknown filter type: ${filter.type}`);
     });
   }
