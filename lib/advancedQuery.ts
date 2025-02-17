@@ -1,18 +1,19 @@
-import type { UnicodeMappings, BidiClass } from "./deserialize";
+import type { UnicodeMappings } from "./deserialize";
+import type { BidiClass } from "./types";
 
 type FilterData =
   | { type: "character"; value: RegExp }
   | { type: "name"; value: RegExp | string }
   | { type: "range"; value: [number, number] }
   | { type: "bidi"; value: BidiClass };
-  
+
 export type Filter = FilterData & { negated?: boolean };
 
 export const PLANE_LENGTH = 2 << 15;
 
 export function advancedQuery(
   unicodeMappings: UnicodeMappings,
-  filters: Filter[]
+  filters: Filter[],
 ) {
   let data = [...unicodeMappings.unicodeData.values()];
 

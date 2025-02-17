@@ -1,44 +1,4 @@
-export type BidiClass =
-  | "L"
-  | "R"
-  | "AL"
-  | "EN"
-  | "ES"
-  | "ET"
-  | "AN"
-  | "CS"
-  | "NSM"
-  | "BN"
-  | "B"
-  | "S"
-  | "WS"
-  | "ON"
-  | "LRE"
-  | "LRO"
-  | "RLE"
-  | "RLO"
-  | "PDF"
-  | "LRI"
-  | "RLI"
-  | "FSI"
-  | "PDI";
-
-export interface UnicodeMapData {
-  codepoint: number;
-  label: string;
-  category: string;
-  combiningClass: string;
-  bidiClass: BidiClass;
-  decompositionStr: string;
-  decimalEquiv: string;
-  digitEquiv: string;
-  numericEquiv: string;
-  isBidiMirrored: boolean;
-  oldName: string;
-  uppercaseMapping: string;
-  lowercaseMapping: string;
-  titlecaseMapping: string;
-}
+import type { BidiClass, CombiningClass, Digit, Numeric, UnicodeCategory, UnicodeMapData } from "./types";
 
 interface UnicodeBlockData {
   name: string;
@@ -64,31 +24,30 @@ export function getUnicodeMap(text: string): Map<number, UnicodeMapData> {
       digitEquiv,
       numericEquiv,
       bidiMirrored,
-      oldName, /* isoComment */
-      ,
+      oldName,
+      _isoComment,
       uppercaseMapping,
       lowercaseMapping,
       titlecaseMapping,
     ] = line.split(";");
 
     const codepoint = parseInt(codepointStr, 16);
-    const isBidiMirrored = bidiMirrored === "Y";
 
     const data: UnicodeMapData = {
       codepoint,
       label: label.toLowerCase(),
-      category,
-      combiningClass,
+      category: category as UnicodeCategory,
+      combiningClass: parseInt(combiningClass) as CombiningClass,
       bidiClass: bidiClass as BidiClass,
-      decompositionStr,
-      decimalEquiv,
-      digitEquiv,
-      numericEquiv,
-      isBidiMirrored,
-      oldName,
-      uppercaseMapping,
-      lowercaseMapping,
-      titlecaseMapping,
+      decompositionStr: decompositionStr || null,
+      decimalEquiv: decimalEquiv ? parseInt(decimalEquiv) as Digit : null,
+      digitEquiv: digitEquiv ? parseInt(digitEquiv) as Digit : null,
+      numericEquiv: numericEquiv as Numeric || null,
+      isBidiMirrored: bidiMirrored === "Y",
+      oldName: oldName || null,
+      uppercaseMapping: uppercaseMapping ? parseInt(uppercaseMapping, 16) : null,
+      lowercaseMapping: lowercaseMapping ? parseInt(lowercaseMapping, 16) : null,
+      titlecaseMapping: titlecaseMapping ? parseInt(titlecaseMapping, 16) : null,
     };
     return [codepoint, data] as const;
   });
