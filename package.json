@@ -1,33 +1,48 @@
 {
-  "name": "unicode-query",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@emnudge/unicode-query",
+  "version": "0.0.1",
+  "description": "Unicode query engine",
   "type": "module",
   "files": [
     "dist"
   ],
-  "main": "./dist/unicode-query.umd.cjs",
-  "module": "./dist/unicode-query.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/unicode-query.js",
-      "require": "./dist/unicode-query.umd.cjs"
+      "import": "./dist/index.js"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emnudge/unicode-query.git"
+  },
+  "keywords": [
+    "unicode",
+    "query"
+  ],
+  "license": "MIT",
+  "tsup": {
+    "entry": [
+      "lib/index.ts"
+    ],
+    "clean": true,
+    "dts": true,
+    "format": [
+      "esm"
+    ]
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "build:lib": "tsup",
     "test": "vitest",
     "bench": "VITEST_MODE=bench vitest"
   },
   "devDependencies": {
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
-  },
-  "dependencies": {
     "rollup-plugin-copy": "^3.5.0",
+    "tsup": "^8.3.6",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
     "vitest": "^3.0.5"
   }
 }
